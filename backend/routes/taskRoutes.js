@@ -7,9 +7,10 @@ router.post("/tasks", async (req, res) => {
   try {
     const { title, description } = req.body;
     const newTask = await Task.create({ title, description });
-    res.status(201).json({ message: "Task created successfully", task: newTask });
+    res.status(200).json({ message: "Task created successfully", task: newTask });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error(error);
+    res.status(400).json({ error: error });
   }
 });
 
@@ -17,9 +18,9 @@ router.post("/tasks", async (req, res) => {
 router.get("/tasks", async (req, res) => {
   try {
     const tasks = await Task.find().sort({ createdAt: -1 });
-    res.json(tasks);
+    return res.status(200).json(tasks);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    return res.status(400).json({ error: error });
   }
 });
 
@@ -28,9 +29,9 @@ router.delete("/tasks/:id", async (req, res) => {
   try {
     const { id } = req.params;
     await Task.findByIdAndDelete(id);
-    res.json({ message: "Task deleted successfully" });
+    return res.status(200).json({ message: "Task deleted successfully" });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(400).json({ error: error.message });
   }
 });
 
@@ -44,9 +45,9 @@ router.put("/tasks/:id", async (req, res) => {
       { title, description },
       { new: true }
     );
-    res.json({ message: "Task updated successfully", task: updatedTask });
+    res.status(200).json({ message: "Task updated successfully", task: updatedTask });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(400).json({ error: error.message });
   }
 });
 
