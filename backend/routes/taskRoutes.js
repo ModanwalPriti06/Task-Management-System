@@ -36,7 +36,7 @@ router.delete("/deleteTask/:id", async (req, res) => {
 });
 
 // ➤ Update Task (PUT)
-router.put("/tasks/:id", async (req, res) => {
+router.put("/updateTask/:id", async (req, res) => {
   try {
     const { id } = req.params;
     const { title, description } = req.body;

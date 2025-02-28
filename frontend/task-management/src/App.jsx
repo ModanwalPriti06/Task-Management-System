@@ -5,7 +5,6 @@ import TextField from "@mui/material/TextField";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import axios from "axios";
 
@@ -19,6 +18,7 @@ function App() {
   const [title, setTitle] = useState("");
   const [desc, setDesc] = useState("");
   const [isEditing, setIsEditing] = useState(false);
+  const [taskId, setTaskId] = useState('');
 
   // Fetch Tasks from Backend
   useEffect(() => {
@@ -43,10 +43,11 @@ function App() {
     }
 
     try {
-      const response = await axios.post(`${API_URL}/createTask`, {
+      let obj = {
         title,
         description: desc,
-      });
+      }
+      const response = await axios.post(`${API_URL}/createTask`, obj);
       setAllTask([...allTask, response.data.task]);
       setTitle("");
       setDesc("");
@@ -71,7 +72,8 @@ function App() {
       setIsEditing(true);
       setOpen(true);
       setTitle(task.title);
-      setDescription(data.description);
+      setDesc(task.description);
+      setTaskId(task._id);
     } catch (err) {
       console.error("Error updating task:", err);
     }
@@ -79,6 +81,15 @@ function App() {
 
   const updatetask = async () => {
     try {
+      let obj = {
+        title,
+        description: desc,
+      }
+      setOpen(false);
+      setTitle('');
+      setDesc('');
+      await axios.put(`${API_URL}/updateTask/${taskId}`, obj);
+      fetchTasks();
     } catch (error) {
       console.error("Error updating is: ", error);
     }
@@ -160,10 +171,10 @@ function App() {
           <DialogActions>
             <Button onClick={() => setOpen(false)}>Cancel</Button>
             {isEditing ? (
-              <Button onClick={handleCreateTask}>Submit</Button>
-            ) : (
               <Button onClick={updatetask}>Update</Button>
-            )}
+              ) : (
+                <Button onClick={handleCreateTask}>Submit</Button>
+                )}
           </DialogActions>
         </Dialog>
 
