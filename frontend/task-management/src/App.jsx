@@ -1,31 +1,31 @@
-import { useState , useEffect} from "react";
+import { useState, useEffect } from "react";
 import "./App.css";
-import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
+import Button from "@mui/material/Button";
+import TextField from "@mui/material/TextField";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
 import axios from "axios";
 
-const API_URL = "http://localhost:5000/api"; 
-
+const API_URL = "http://localhost:5000/api";
 
 function App() {
   const [allTask, setAllTask] = useState([]);
   const [open, setOpen] = useState(false);
   const [showDesc, setShowDesc] = useState(false);
-  const [description, setDescription] = useState('');
-  const [title, setTitle] = useState('');
-  const [desc, setDesc] = useState('');
+  const [description, setDescription] = useState("");
+  const [title, setTitle] = useState("");
+  const [desc, setDesc] = useState("");
+  const [isEditing, setIsEditing] = useState(false);
 
-   // Fetch Tasks from Backend
-   useEffect(() => {
+  // Fetch Tasks from Backend
+  useEffect(() => {
     fetchTasks();
   }, []);
 
-// show all task
+  // show all task
   const fetchTasks = async () => {
     try {
       const response = await axios.get(`${API_URL}/tasks`);
@@ -43,7 +43,7 @@ function App() {
     }
 
     try {
-      const response = await axios.post( `${API_URL}/createTask`, {
+      const response = await axios.post(`${API_URL}/createTask`, {
         title,
         description: desc,
       });
@@ -62,20 +62,36 @@ function App() {
       await axios.delete(`${API_URL}/deleteTask/${taskId}`);
       fetchTasks();
     } catch (error) {
-      console.error("Error creating task:", error);
+      console.error("Error deleting task:", error);
     }
   };
 
-  const seeDescrption = (data)=>{
-    setShowDesc(true);
-    setDescription(data.description)
-  }
+  const handleEditTask = async (task) => {
+    try {
+      setIsEditing(true);
+      setOpen(true);
+      setTitle(task.title);
+      setDescription(data.description);
+    } catch (err) {
+      console.error("Error updating task:", err);
+    }
+  };
 
+  const updatetask = async () => {
+    try {
+    } catch (error) {
+      console.error("Error updating is: ", error);
+    }
+  };
+
+  const seeDescrption = (data) => {
+    setShowDesc(true);
+    setDescription(data.description);
+  };
 
   return (
     <>
       <div className="container">
-        
         {/* navbar */}
         <div className="navbar">
           <h1>Task Management System</h1>
@@ -84,74 +100,81 @@ function App() {
         {/* main content showing task */}
 
         <div className="buttonCreate">
-        <button className="create" onClick={()=>setOpen(true)}>Create Task</button>
+          <button className="create" onClick={() => setOpen(true)}>
+            Create Task
+          </button>
         </div>
 
         <div className="content">
           <div className="cardContainer">
             {allTask?.map((task, index) => (
               <div key={index} className="cardTask">
-                    <h5 onClick={() => seeDescrption(task)}>
-                      {task?.title || "No Title"}
-                    </h5>               
-                <button className="edit">Edit</button>
-                <button className="delete" onClick={()=>handleDeletetask(task._id)}>Delete</button>
+                <h5 onClick={() => seeDescrption(task)}>
+                  {task?.title || "No Title"}
+                </h5>
+                <button className="edit" onClick={() => handleEditTask(task)}>
+                  Edit
+                </button>
+                <button
+                  className="delete"
+                  onClick={() => handleDeletetask(task._id)}
+                >
+                  Delete
+                </button>
               </div>
             ))}
           </div>
         </div>
 
         {/* Dialog for create task */}
-        <Dialog
-        open={open}
-        onClose={()=> setOpen(false)}
-      >
-        <DialogTitle>Create Task Here</DialogTitle>
-        <DialogContent>
-          <TextField
-            autoFocus
-            required
-            margin="dense"
-            id="name"
-            name="Title"
-            label="Title"
-            type="text"
-            fullWidth
-            value={title}
-            onChange={(e)=>setTitle(e.target.value)}
-            variant="standard"
-          />
-          <TextField
-            autoFocus
-            required
-            margin="dense"
-            id="name"
-            name="Desciption"
-            label="Desciption"
-            type="text"
-            fullWidth
-            value={desc}
-            onChange={(e)=>setDesc(e.target.value)}
-            variant="standard"
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={()=> setOpen(false)}>Cancel</Button>
-          <Button onClick={handleCreateTask}>Submit</Button>
-        </DialogActions>
-      </Dialog>
+        <Dialog open={open} onClose={() => setOpen(false)}>
+          <DialogTitle>Create Task Here</DialogTitle>
+          <DialogContent>
+            <TextField
+              autoFocus
+              required
+              margin="dense"
+              id="name"
+              name="Title"
+              label="Title"
+              type="text"
+              fullWidth
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              variant="standard"
+            />
+            <TextField
+              autoFocus
+              required
+              margin="dense"
+              id="name"
+              name="Desciption"
+              label="Desciption"
+              type="text"
+              fullWidth
+              value={desc}
+              onChange={(e) => setDesc(e.target.value)}
+              variant="standard"
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setOpen(false)}>Cancel</Button>
+            {isEditing ? (
+              <Button onClick={handleCreateTask}>Submit</Button>
+            ) : (
+              <Button onClick={updatetask}>Update</Button>
+            )}
+          </DialogActions>
+        </Dialog>
 
-      {/* show title dialog */}
-      <Dialog
-        open={showDesc}
-        onClose={()=> setShowDesc(false)}
-      >
-        <DialogTitle>Description</DialogTitle>
-        <DialogContent>{description}</DialogContent>
-        <DialogActions>
-          <Button onClick={()=> setShowDesc(false)}>Cancel</Button>
-        </DialogActions>
-      </Dialog>
+        {/* show title dialog */}
+        <Dialog open={showDesc} onClose={() => setShowDesc(false)}>
+          <DialogTitle>Description</DialogTitle>
+          <DialogContent>{description}</DialogContent>
+          <DialogActions>
+            <Button onClick={() => setShowDesc(false)}>Cancel</Button>
+          </DialogActions>
+        </Dialog>
       </div>
     </>
   );
