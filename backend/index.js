@@ -11,6 +11,9 @@ const MONGO_URI = process.env.MONGO_URI;
 app.use(cors());
 app.use(express.json());
 
+// express.json()- Built-in middleware
+// cors (Cross-Origin Resource Sharing) - Third-party Middleware 
+
 // MongoDB Connection
 mongoose.connect(MONGO_URI, {
     useNewUrlParser: true,

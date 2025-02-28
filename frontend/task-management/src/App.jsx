@@ -8,7 +8,8 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import axios from "axios";
-const API_URL = "http://localhost:5000/api/tasks"; // Updated API URL
+
+const API_URL = "http://localhost:5000/api"; 
 
 
 function App() {
@@ -27,7 +28,7 @@ function App() {
 // show all task
   const fetchTasks = async () => {
     try {
-      const response = await axios.get(API_URL);
+      const response = await axios.get(`${API_URL}/tasks`);
       setAllTask(response.data);
     } catch (error) {
       console.error("Error fetching tasks:", error);
@@ -42,7 +43,7 @@ function App() {
     }
 
     try {
-      const response = await axios.post(API_URL, {
+      const response = await axios.post( `${API_URL}/createTask`, {
         title,
         description: desc,
       });
@@ -50,6 +51,16 @@ function App() {
       setTitle("");
       setDesc("");
       setOpen(false);
+    } catch (error) {
+      console.error("Error creating task:", error);
+    }
+  };
+
+  // handle delete Task
+  const handleDeletetask = async (taskId) => {
+    try {
+      await axios.delete(`${API_URL}/deleteTask/${taskId}`);
+      fetchTasks();
     } catch (error) {
       console.error("Error creating task:", error);
     }
@@ -84,7 +95,7 @@ function App() {
                       {task?.title || "No Title"}
                     </h5>               
                 <button className="edit">Edit</button>
-                <button className="delete">Delete</button>
+                <button className="delete" onClick={()=>handleDeletetask(task._id)}>Delete</button>
               </div>
             ))}
           </div>

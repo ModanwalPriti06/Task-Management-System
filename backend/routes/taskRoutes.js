@@ -3,7 +3,7 @@ const router = express.Router();
 const Task = require("../models/Task");
 
 // ➤ Create Task (POST)
-router.post("/tasks", async (req, res) => {
+router.post("/createTask", async (req, res) => {
   try {
     const { title, description } = req.body;
     const newTask = await Task.create({ title, description });
@@ -25,7 +25,7 @@ router.get("/tasks", async (req, res) => {
 });
 
 // ➤ Delete Task (DELETE)
-router.delete("/tasks/:id", async (req, res) => {
+router.delete("/deleteTask/:id", async (req, res) => {
   try {
     const { id } = req.params;
     await Task.findByIdAndDelete(id);
