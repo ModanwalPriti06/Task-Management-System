@@ -88,6 +88,7 @@ function App() {
       setOpen(false);
       setTitle('');
       setDesc('');
+      setIsEditing(false);
       await axios.put(`${API_URL}/updateTask/${taskId}`, obj);
       fetchTasks();
     } catch (error) {
